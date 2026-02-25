@@ -17,7 +17,7 @@
 
 #include "spinnakerdriver.h"
 
-#define CATCH_SPINNAKER(f) try { f; } catch (Spinnaker::Exception &e) { std::cerr << "[Spinnaker] Could not set parameter: " << e.GetFullErrorMessage() << std::endl; }
+#define CATCH_SPINNAKER(f) try { f; } catch (Spinnaker::Exception &e) { std::cerr << "[Spinnaker] Could not set parameter: " << e.GetFullErrorMessage() << "\n" << __LINE__ << std::endl; }
 
 
 class SpinnakerImage : public RawImage {
@@ -61,8 +61,10 @@ SpinnakerDriver::SpinnakerDriver(const CameraConfig& config) {
 
 	CATCH_SPINNAKER(pCam->TriggerMode.SetValue(Spinnaker::TriggerMode_Off))
 	CATCH_SPINNAKER(pCam->AcquisitionMode.SetValue(Spinnaker::AcquisitionMode_Continuous))
-	CATCH_SPINNAKER(pCam->PixelFormat.SetValue(Spinnaker::PixelFormat_BayerRG8))
-	CATCH_SPINNAKER(pCam->AcquisitionFrameRateEnable.SetValue(false))
+	//CATCH_SPINNAKER(pCam->PixelFormat.SetValue(Spinnaker::PixelFormat_BayerRG8))
+	CATCH_SPINNAKER(pCam->PixelFormat.SetValue(Spinnaker::PixelFormat_BayerBG8))
+
+	CATCH_SPINNAKER(pCam->AcquisitionFrameRateEnable.SetValue(true))
 
 	if(config.autoResolution()) {
 		CATCH_SPINNAKER(pCam->Width.SetValue(pCam->WidthMax.GetValue()));
@@ -73,7 +75,7 @@ SpinnakerDriver::SpinnakerDriver(const CameraConfig& config) {
 	}
 
 	if(config.autoExposure()) {
-		CATCH_SPINNAKER(pCam->AutoExposureMeteringMode.SetValue(Spinnaker::AutoExposureMeteringMode_Average))
+		// CATCH_SPINNAKER(pCam->AutoExposureMeteringMode.SetValue(Spinnaker::AutoExposureMeteringMode_Average))
 		CATCH_SPINNAKER(pCam->ExposureAuto.SetValue(Spinnaker::ExposureAuto_Continuous))
 	} else {
 		CATCH_SPINNAKER(pCam->ExposureAuto.SetValue(Spinnaker::ExposureAuto_Off))
@@ -88,23 +90,23 @@ SpinnakerDriver::SpinnakerDriver(const CameraConfig& config) {
 	}
 
 	if(config.autoExposure() && config.autoGain()) {
-		CATCH_SPINNAKER(pCam->AutoExposureControlPriority.SetValue(Spinnaker::AutoExposureControlPriority_Gain))
+		// CATCH_SPINNAKER(pCam->AutoExposureControlPriority.SetValue(Spinnaker::AutoExposureControlPriority_Gain))
 	}
 
 	if(config.autoGamma()) {
-		CATCH_SPINNAKER(pCam->GammaEnable.SetValue(false))
+		// CATCH_SPINNAKER(pCam->GammaEnable.SetValue(false))
 	} else {
-		CATCH_SPINNAKER(pCam->GammaEnable.SetValue(true))
+		// CATCH_SPINNAKER(pCam->GammaEnable.SetValue(true))
 		CATCH_SPINNAKER(pCam->Gamma.SetValue((float)config.gamma))
 	}
 
 	if(config.whiteBalanceType != WhiteBalanceType_Manual) {
 		CATCH_SPINNAKER(pCam->BalanceWhiteAuto.SetValue(Spinnaker::BalanceWhiteAuto_Continuous))
-		CATCH_SPINNAKER(pCam->BalanceWhiteAutoProfile.SetValue(
-				config.whiteBalanceType == WhiteBalanceType_AutoOutdoor
-				? Spinnaker::BalanceWhiteAutoProfile_Outdoor
-				: Spinnaker::BalanceWhiteAutoProfile_Indoor
-		))
+		// CATCH_SPINNAKER(pCam->BalanceWhiteAutoProfile.SetValue(
+		// 		config.whiteBalanceType == WhiteBalanceType_AutoOutdoor
+		// 		? Spinnaker::BalanceWhiteAutoProfile_Outdoor
+		// 		: Spinnaker::BalanceWhiteAutoProfile_Indoor
+		// ))
 	} else {
 		CATCH_SPINNAKER(pCam->BalanceWhiteAuto.SetValue(Spinnaker::BalanceWhiteAuto_Off))
 		CATCH_SPINNAKER(pCam->BalanceRatioSelector.SetValue(Spinnaker::BalanceRatioSelector_Blue))
@@ -120,7 +122,7 @@ SpinnakerDriver::SpinnakerDriver(const CameraConfig& config) {
 	int width = pCam->WidthMax.GetValue();
 	int height = pCam->HeightMax.GetValue();
 	for(int i = 0; i < pCam->TLStream.StreamBufferCountManual.GetMin(); i++) {
-		std::shared_ptr<RawImage> buffer = std::make_shared<RawImage>(&PixelFormat::RGGB8, width/2, height/2, "spinnaker");
+		std::shared_ptr<RawImage> buffer = std::make_shared<RawImage>(&PixelFormat::BGGR8, width/2, height/2, "spinnaker");
 		buffers[buffer] = std::make_unique<CLMap<uint8_t>>(buffer->write<uint8_t>());
 	}
 
@@ -144,15 +146,15 @@ std::shared_ptr<RawImage> SpinnakerDriver::readImage() {
 }
 
 const PixelFormat SpinnakerDriver::format() {
-	return PixelFormat::RGGB8;
+	return PixelFormat::BGGR8;
 }
 
 double SpinnakerDriver::expectedFrametime() {
-	return 1 / pCam->AcquisitionResultingFrameRate.GetValue();
+	CATCH_SPINNAKER(return 1 / pCam->AcquisitionFrameRate.GetValue());
 }
 
 SpinnakerDriver::~SpinnakerDriver() {
-	pCam->EndAcquisition();
+	CATCH_SPINNAKER(pCam->EndAcquisition());
 }
 
 std::shared_ptr<RawImage> SpinnakerDriver::borrow(const Spinnaker::ImagePtr& pImage) {
@@ -165,7 +167,7 @@ std::shared_ptr<RawImage> SpinnakerDriver::borrow(const Spinnaker::ImagePtr& pIm
 	}
 
 	std::cerr << "[Spinnaker] Did not get image with given buffer, creating new buffer; expect OpenCL performance degradation" << std::endl;
-	std::shared_ptr<RawImage> image = std::make_shared<RawImage>(&PixelFormat::RGGB8, (int)pImage->GetWidth() / 2, (int)pImage->GetHeight() / 2, (unsigned char*)pImage->GetData());
+	std::shared_ptr<RawImage> image = std::make_shared<RawImage>(&PixelFormat::BGGR8, (int)pImage->GetWidth() / 2, (int)pImage->GetHeight() / 2, (unsigned char*)pImage->GetData());
 	buffers[image] = nullptr;
 	return image;
 }

@@ -36,7 +36,8 @@ else
             if [[ $vendor == 0x10de ]]; then
                 echo -e "\e[92m »  NVIDIA graphics card selected\e[39m"
                 opencl_arch='opencl-nvidia nvidia-utils'
-                opencl_debian=nvidia-opencl-icd
+                # opencl_debian=nvidia-opencl-icd
+                opencl_debian=libnvidia-compute-590
             elif [[ $vendor == 0x1002 ]]; then
                 echo -e "\e[92m »  AMD graphics card selected\e[39m"
                 opencl_arch='rocm-opencl-runtime mesa'
