@@ -1,0 +1,46 @@
+# Minimal vision_processor configuration
+
+# Vision camera ID handled by this vision_processor instance.
+# On multi camera fields the IDs have to be ordered according to camera_ids.png.
+cam_id: 0
+
+camera:
+  id: 0
+  exposure: 3.0
+  gain: 10.0
+  white_balance:
+    red: 1.513275
+    blue: 1.480835
+  width: 1280
+  height: 1024
+
+stream:
+  raw_feed: false
+
+geometry:
+  # Total camera amount over the field.
+  camera_amount: 2
+  # Camera height above the field in mm.
+  # If your camera doesn't look perpendicular to the field you can let it at 0.0 for automatic camera height calibration.
+  camera_height: 2210
+
+  refinement: true
+
+  # Field line crossings at the edges of the camera extent in pixels from the top left image corner.
+  # The first coordinate must be the edge with the smallest x and y field coordinate.
+  line_corners:
+  - [126, 89] # (-, -)
+  - [485, 85] # (-, +)
+  - [134, 401] # (-, +)
+  - [487, 394] # (+, +)
+  # - [126, 89]
+  # - [485, 85]
+  # - [437 , 609]
+  # - [203 , 587]
+  # - [242, 178]
+  # - [970, 170]
+  # - [874 , 1218]
+  # - [406 , 1174]
+
+debug:
+  debug_images: true
