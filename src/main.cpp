@@ -315,6 +315,7 @@ int main(int argc, char* argv[]) {
 
 	signal(SIGTERM, sig_stop);
 	signal(SIGINT, sig_stop);
+	int prev_version = 0;
 	while(noSigterm) {
 		frameId++;
 		std::shared_ptr<RawImage> img = r.camera->readImage();
@@ -328,7 +329,6 @@ int main(int argc, char* argv[]) {
 		r.perspective->geometryCheck(img->width, img->height, r.gcSocket->maxBotHeight, r.resamplingFactor);
 		std::shared_ptr<CLImage> channels[4];
 		r.raw2quad(*img, channels);
-
 		if(r.perspective->geometryVersion) {
 			std::shared_ptr<CLImage> flat;
 			std::shared_ptr<CLImage> gradDot;
@@ -445,6 +445,12 @@ int main(int argc, char* argv[]) {
 						r.streamImage(*blobCenter);
 						break;
 				}
+			}
+
+			if (r.perspective->geometryVersion != prev_version) {
+				std::cout << "------- GEOM UPDATED --------" << std::endl;
+				geometryCalibration(r, *r.quad2rgba(channels), false);
+				prev_version = r.perspective->geometryVersion;
 			}
 		} else if(r.socket->getGeometryVersion()) {
 			geometryCalibration(r, *r.quad2rgba(channels));

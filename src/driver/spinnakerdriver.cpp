@@ -41,6 +41,7 @@ SpinnakerDriver::SpinnakerDriver(const CameraConfig& config) {
 
 	while(true) {
 		Spinnaker::CameraList camList = pSystem->GetCameras();
+		std::cout << "[Spinnaker] Found " << camList.GetSize() << " Spinnaker cameras." << std::endl;
 		if (camList.GetSize() > config.hardwareId) {
 			pCam = camList.GetByIndex(config.hardwareId);
 			pCam->Init();

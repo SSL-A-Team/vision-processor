@@ -24,4 +24,4 @@ Eigen::Vector2f cv2eigen(const cv::Vec2f& v);
 std::vector<Eigen::Vector2f> getLinePixels(const cv::Mat& thresholded);
 int modelError(const Resources& r, const CameraModel& model, const std::vector<Eigen::Vector2f>& linePixels);
 
-void geometryCalibration(const Resources& r, const CLImage& img);
+void geometryCalibration(const Resources& r, const CLImage& img, bool updateCalibration = true);

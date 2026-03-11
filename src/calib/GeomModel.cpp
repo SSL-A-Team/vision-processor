@@ -500,8 +500,8 @@ static bool cornerCalibration(const Resources& r, const std::vector<std::vector<
 	return true;
 }
 
-void geometryCalibration(const Resources& r, const CLImage& rgba) {
-	rgba.save(".geomcalib_input.png");
+void geometryCalibration(const Resources& r, const CLImage& rgba, bool updateCalibration) {
+	rgba.save(".geomcalib_input." + std::to_string(r.camId) + ".png");
 
 	cv::Mat bgr;
 	cv::cvtColor(rgba.read<RGBA>().cv, bgr, cv::COLOR_RGBA2BGR);
@@ -513,7 +513,7 @@ void geometryCalibration(const Resources& r, const CLImage& rgba) {
 
 	cv::Mat thresholded(gray.rows, gray.cols, CV_8UC1, 0.0);
 	thresholdImage(r, gray, halfLineWidth, thresholded);
-	cv::imwrite("img/" + rgba.name + ".pixels.png", thresholded);
+	cv::imwrite("img/" + rgba.name + ".pixels." + std::to_string(r.camId) + ".png", thresholded);
 
 	const std::vector<Eigen::Vector2f> linePixels = getLinePixels(thresholded);
 
@@ -565,26 +565,34 @@ void geometryCalibration(const Resources& r, const CLImage& rgba) {
 
 	const bool calibHeight = r.cameraHeight == 0.0;
 	CameraModel model({thresholded.cols, thresholded.rows}, r.camId, r.cameraAmount, (float)r.cameraHeight, r.socket->getGeometry().field());
-	//drawModel(r, thresholded, linePixels, model);
-	//thresholded.save(".initial.png");
+	// drawModel(r, thresholded, linePixels, model);
+	// thresholded.save(".initial.png");
 
-	cornerCalibration(r, mergedPixels, thresholded, calibHeight, model);
+	if (!updateCalibration) {
+		model = r.perspective->model;
+	}
+
+	if (updateCalibration) {
+		cornerCalibration(r, mergedPixels, thresholded, calibHeight, model);
+	}
 	drawModel(r, thresholded, linePixels, model);
-	cv::imwrite("img/" + rgba.name + ".pixels.corner.png", thresholded);
+	cv::imwrite("img/" + rgba.name + ".pixels.corner." + std::to_string(r.camId) + ".png", thresholded);
 
-	if(r.geometryRefinement)
+	if(updateCalibration && r.geometryRefinement)
 		directCalibrationRefinement(r, mergedPixels, linePixels, calibHeight, model);
 
 	model.updateDerived();
 	int error = modelError(r, model, linePixels);
 	std::cout << "[Geometry calibration] Best model: " << model << " error " << (error/(float)linePixels.size()) << std::endl;
 
-	SSL_WrapperPacket wrapper;
-	wrapper.mutable_geometry()->CopyFrom(r.socket->getGeometry());
-	wrapper.mutable_geometry()->clear_calib();
-	wrapper.mutable_geometry()->add_calib()->CopyFrom(model.getProto(r.camId));
-	r.socket->send(wrapper);
+	if (updateCalibration) {
+		SSL_WrapperPacket wrapper;
+		wrapper.mutable_geometry()->CopyFrom(r.socket->getGeometry());
+		wrapper.mutable_geometry()->clear_calib();
+		wrapper.mutable_geometry()->add_calib()->CopyFrom(model.getProto(r.camId));
+		r.socket->send(wrapper);
+	}
 
 	drawModel(r, thresholded, linePixels, model);
-	cv::imwrite("img/" + rgba.name + ".pixels.refined.png", thresholded);
+	cv::imwrite("img/" + rgba.name + ".pixels.refined." + std::to_string(r.camId) + ".png", thresholded);
 }
