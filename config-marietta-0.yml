@@ -1,7 +1,3 @@
-# Minimal vision_processor configuration
-
-# Vision camera ID handled by this vision_processor instance.
-# On multi camera fields the IDs have to be ordered according to camera_ids.png.
 cam_id: 0
 
 camera:
@@ -15,7 +11,7 @@ camera:
   height: 1024
 
 stream:
-  raw_feed: false
+  raw_feed: true
 
 geometry:
   # Total camera amount over the field.
@@ -33,14 +29,6 @@ geometry:
   - [485, 85] # (-, +)
   - [134, 401] # (-, +)
   - [487, 394] # (+, +)
-  # - [126, 89]
-  # - [485, 85]
-  # - [437 , 609]
-  # - [203 , 587]
-  # - [242, 178]
-  # - [970, 170]
-  # - [874 , 1218]
-  # - [406 , 1174]
 
 debug:
   debug_images: true

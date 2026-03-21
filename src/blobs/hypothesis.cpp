@@ -68,6 +68,9 @@ void BallHypothesis::recalcPostColorCalib(const Resources& r) {
 }
 
 void BallHypothesis::addToDetectionFrame(const Resources& r, SSL_DetectionFrame* detection) {
+	if (score < 0.4) {
+		return;
+	}
 	const Eigen::Vector2f imgPos = r.perspective->model.field2image({pos.x(), pos.y(), (float)r.gcSocket->maxBotHeight});
 	const Eigen::Vector3f ballPos = r.perspective->model.image2field(imgPos, r.perspective->field.ball_radius());
 	SSL_DetectionBall* ball = detection->add_balls();
@@ -85,6 +88,13 @@ void BallHypothesis::calcColorScore(const Resources& r) {
 	int orange = (blob->color - r.orange).squaredNorm();
 
 	if (falseOrange <= orange) {
+		score = 0;
+		return;
+	}
+
+	const Eigen::Vector3i white{200, 200, 200};
+	int falseFieldLine = (blob->color - white).squaredNorm();
+	if (falseFieldLine <= orange) {
 		score = 0;
 		return;
 	}
@@ -138,6 +148,9 @@ bool BotHypothesis::isClipping(const Resources& r, const BallHypothesis& ball) c
 }
 
 void BotHypothesis::addToDetectionFrame(const Resources& r, SSL_DetectionFrame* detection) {
+	if (score < 0.2) {
+		return;
+	}
 	bool yellow = botId < 16;
 	const Eigen::Vector2f imgPos = r.perspective->model.field2image({pos.x(), pos.y(), (float)r.gcSocket->maxBotHeight});
 	const Eigen::Vector3f botPos = r.perspective->model.image2field(imgPos, (float)(yellow ? r.gcSocket->yellowBotHeight : r.gcSocket->blueBotHeight));

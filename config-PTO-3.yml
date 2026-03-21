@@ -1,0 +1,48 @@
+cam_id: 2
+
+camera:
+  id: 3
+  exposure: 2.0
+  gain: 10.0
+  white_balance:
+    red: 0.913275
+    blue: 1.580835
+  width: 1280
+  height: 1024
+
+stream:
+  raw_feed: true
+
+geometry:
+  # Total camera amount over the field.
+  camera_amount: 4
+  # Camera height above the field in mm.
+  # If your camera doesn't look perpendicular to the field you can let it at 0.0 for automatic camera height calibration.
+  camera_height: 2920
+
+  refinement: false
+
+  # Field line crossings at the edges of the camera extent in pixels from the top left image corner.
+  # The first coordinate must be the edge with the smallest x and y field coordinate.
+  line_corners:
+  - [41, 422] # (-, -)
+  - [586, 409] # (-, +)
+  - [579, 67] # (-, +)
+  - [38, 51] # (+, +)
+
+thresholds:
+  min_cam_edge_distance: 800
+
+color:
+  # Strength of the reference color during color updates (0.0 - 0.5-history_force/2)
+  reference_force: 0.2
+  # Strength of the previous color during color updates (0.0 - 1.0-reference_force)
+  history_force: 0.7
+
+  # Reference colors used for ball determination
+  orange: [241, 117, 59]
+  field: [3, 5, 3]
+
+
+debug:
+  debug_images: true

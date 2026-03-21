@@ -561,7 +561,7 @@ void geometryCalibration(const Resources& r, const CLImage& rgba, bool updateCal
 	for (const auto& item : mergedLines) {
 		cv::line(bgr, {item.first}, {item.second}, CV_RGB(0, 255, 0));
 	}
-	cv::imwrite("img/" + rgba.name + ".lines.png", bgr);
+	cv::imwrite("img/" + rgba.name + ".lines." + std::to_string(r.camId) + ".png", bgr);
 
 	const bool calibHeight = r.cameraHeight == 0.0;
 	CameraModel model({thresholded.cols, thresholded.rows}, r.camId, r.cameraAmount, (float)r.cameraHeight, r.socket->getGeometry().field());

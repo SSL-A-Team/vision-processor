@@ -1,0 +1,113 @@
+# For a line name definition see the SSL rules: https://robocup-ssl.github.io/ssl-rules/sslrules.html#_field_setup
+default_lines:
+  goal2goal: true
+  halfway: true
+  centercircle: false
+
+# All lengths are in mm.
+# The configuration structure below mirrors proto/ssl_vision_geometry.proto,
+# see there for a description of all parameters.
+
+field:
+  field_length: 9000
+  field_width: 6000
+  goal_width: 1000
+  goal_depth: 180
+  goal_height: 160
+  penalty_area_depth: 1000
+  penalty_area_width: 2000
+  goal_center_to_penalty_mark: 6000
+  boundary_width: 300
+  center_circle_radius: 500
+  line_thickness: 10
+  ball_radius: 21.5
+  max_robot_radius: 90.0
+
+calib:
+  - camera_id: 0
+    focal_length: 429.89093017578125
+    principal_point_x: 335.0763854980469
+    principal_point_y: 277.1910095214844
+    distortion: 0.6035061478614807
+    q0: 0.9960063099861145
+    q1: -0.025661224499344826
+    q2: -0.08332417160272598
+    q3: -0.019235659390687943
+    tx: 1786.7470703125
+    ty: -1808.647216796875
+    tz: 2230.783935546875
+    derived_camera_world_tx: -1473.7650146484375
+    derived_camera_world_ty: -1631.926513671875
+    derived_camera_world_tz: 2570.0
+    pixel_image_width: 640
+    pixel_image_height: 512
+  - camera_id: 1
+    focal_length: 504.0976015 #1008.195203
+    principal_point_x: 297.8355955 #595.671191
+    principal_point_y: 269.1423805 #538.284761
+    distortion: 1.280000
+    q0: -0.021769
+    q1: 0.998388
+    q2: 0.013555
+    q3: 0.050636
+    tx: -1504.832730
+    ty: -1818.438017
+    tz: 2747.000000
+    derived_camera_world_tx: -1293
+    derived_camera_world_ty: 1680
+    derived_camera_world_tz: 2936
+    pixel_image_width: 640
+    pixel_image_height: 512
+  - camera_id: 2
+    focal_length: 624.36
+    principal_point_x: 343.33
+    principal_point_y: 257.94
+    distortion: 1.03
+    q0: 0.99
+    q1: -0.01
+    q2: 0.10
+    q3: -0.01
+    tx: -2337.28
+    ty: -1609.44
+    tz: 3500.00
+    derived_camera_world_tx: -1565
+    derived_camera_world_ty: -1589
+    derived_camera_world_tz: 3915
+    pixel_image_width: 640
+    pixel_image_height: 512
+  - camera_id: 3
+    focal_length: 533.09
+    principal_point_x: 332.075
+    principal_point_y: 258.225
+    distortion: 0.71
+    q0: 1.00
+    q1: -0.04
+    q2: 0.03
+    q3: -0.04
+    tx: -2074.98
+    ty: 1820.23
+    tz: 3500.00
+    derived_camera_world_tx: 2003
+    derived_camera_world_ty: 1962
+    derived_camera_world_tz: 3465
+    pixel_image_width: 640
+    pixel_image_height: 512
+
+
+#   Updated camera 2 calibration: camera_id: 2
+# focal_length: 443.78826904296875
+# principal_point_x: 234.0742645263672
+# principal_point_y: 270.32623291015625
+# distortion: 0.4846838712692261
+# q0: 0.9996010065078735
+# q1: -0.0023602829314768314
+# q2: -0.024639511480927467
+# q3: -0.013607408851385117
+# tx: -1540.4097900390625
+# ty: -1774.5941162109375
+# tz: 2951.975830078125
+# derived_camera_world_tx: 1676.9405517578125
+# derived_camera_world_ty: -1702.2567138671875
+# derived_camera_world_tz: 2920.0
+# pixel_image_width: 640
+# pixel_image_height: 512

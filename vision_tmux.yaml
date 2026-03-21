@@ -1,0 +1,15 @@
+session_name: vision-processor-tmux
+windows:
+  - window_name: vision
+    focus: true
+    layout: tiled
+    shell_command_before:
+      - cd ~/vision-processor
+    panes:
+      - ./build/vision_processor config-PTO-0.yml
+      - ./build/vision_processor config-PTO-1.yml
+      - ./build/vision_processor config-PTO-2.yml
+      - ./build/vision_processor config-PTO-3.yml
+      - python3 python/geom_publisher.py geometry-PTO.yml
+      - ~/ssl-vision/bin/graphicalClient
+
